@@ -1,0 +1,17 @@
+version: '3'
+services:
+  backend:
+    image: simple_dockerized_server
+    ports:
+      - "8080:3000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/healthcheck"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3    
+
+  frontend:
+    image: simple_dockerized_frontend
+    ports:
+      - "3000:4000"
+
