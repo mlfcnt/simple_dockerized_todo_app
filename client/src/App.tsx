@@ -1,40 +1,37 @@
-import { useEffect, useState } from "react";
 import "./App.css";
+import { useTasks } from "./api";
+import { TaskList } from "./components/TaskList";
+import AddTaskForm from "./components/AddTaskForm";
 
 function App() {
-  const [message, setMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const { error, isLoading } = useTasks();
 
-  const isError = !message && !isLoading;
-
-  useEffect(() => {
-    fetch("http://localhost:8080/")
-      .then((res) => res.json())
-      .then((data) => {
-        setMessage(data.greeting);
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setIsLoading(false);
-      });
-  }, []);
+  if (error) {
+    console.error(error);
+  }
 
   return (
     <div className="App">
-      <h1>Simple dockerized frontend</h1>
-      <h3
-        style={{
-          color: isError ? "red" : "inherit",
-        }}
-      >
-        {" "}
-        {isError
-          ? "Something went wrong...We cannot seem to reach the server"
-          : `Message from the server : ${message}`}
-      </h3>
+      <Title /> <Loader isLoading={isLoading} />
+      <ErrorDisplay error={!!error} />
+      <AddTaskForm />
+      <TaskList />
     </div>
   );
 }
 
 export default App;
+
+const Title = () => {
+  return <h2>Simple dockerized Todo app</h2>;
+};
+
+const Loader = ({ isLoading }: { isLoading: boolean }) => {
+  if (!isLoading) return null;
+  return <p>Loading the tasks...</p>;
+};
+
+const ErrorDisplay = ({ error }: { error: boolean }) => {
+  if (!error) return null;
+  return <p>Failed to load the tasks</p>;
+};

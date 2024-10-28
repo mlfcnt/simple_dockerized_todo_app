@@ -1,17 +1,23 @@
-version: '3'
 services:
   backend:
-    image: simple_dockerized_server
+    build:
+      context: ./server
     ports:
-      - "8080:3000"
+      - "4000:4000"
+    environment:
+      - DB_FILE_NAME=file:/app/data/simple_sqlite_db.db
+    volumes:
+      - sqlite_data:/app/data
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/healthcheck"]
+      test: ["CMD", "curl", "-f", "http://localhost:4000/healthcheck"]
       interval: 1m30s
       timeout: 10s
-      retries: 3    
-
+      retries: 3
   frontend:
-    image: simple_dockerized_frontend
+    build:
+      context: ./client
     ports:
-      - "3000:4000"
+      - "3000:3000"
 
+volumes:
+  sqlite_data:
